@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>우리의 빼빼로데이</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: one centered scene at a time on a strawberry-milk ground; scenes swap like pages of a card. Single deliberate look (no dark mode). */
+:root {
+  --ground: #fbe4e8;      /* strawberry milk */
+  --ground-2: #f6cfd7;
+  --choco: #4a2a1f;       /* chocolate coating */
+  --choco-soft: #7a4b3a;
+  --biscuit: #e2b47a;     /* pepero stick */
+  --berry: #e0526f;       /* strawberry coating / accent */
+  --paper: #fffaf6;
+  --font-hand: "Gaegu", "Nanum Pen Script", cursive;
+  --font-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: radial-gradient(120% 80% at 50% 0%, var(--ground) 40%, var(--ground-2) 100%) fixed, var(--ground);
+  color: var(--choco);
+  font-family: var(--font-body);
+  font-size: 16px;
+  overflow-x: hidden;
+}
+.scene {
+  min-height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 24px; text-align: center;
+  padding-block: 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  animation: rise .6s ease both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+h1, h2 { font-family: var(--font-hand); font-weight: 700; margin: 0; text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); }
+h2 { font-size: clamp(1.9rem, 7.5vw, 2.8rem); }
+.sub { font-size: 1.05rem; color: var(--choco-soft); margin: 0; line-height: 1.6; }
+.date { font-family: var(--font-hand); font-size: 1.3rem; letter-spacing: .08em; color: var(--berry); }
+
+button {
+  font-family: var(--font-hand); font-weight: 700; font-size: 1.5rem;
+  border: 0; border-radius: 999px; padding: 12px 30px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: transform .25s ease, background .2s;
+}
+button:focus-visible { outline: 3px solid var(--choco); outline-offset: 3px; }
+.btn-main { background: var(--choco); color: var(--paper); box-shadow: 0 4px 0 #2c170f; }
+.btn-main:active { transform: translateY(3px); box-shadow: 0 1px 0 #2c170f; }
+.btn-ghost { background: var(--paper); color: var(--choco); box-shadow: 0 3px 0 var(--ground-2); }
+
+/* Pepero sticks drawn in CSS */
+.sticks { display: flex; gap: 14px; align-items: flex-end; height: 170px; }
+.stick {
+  width: 16px; height: 160px; border-radius: 8px;
+  background: linear-gradient(to top, var(--biscuit) 0 22%, var(--choco) 22% 100%);
+  box-shadow: inset -3px 0 0 rgba(0,0,0,.12);
+  transform-origin: bottom center;
+  animation: sway 3s ease-in-out infinite;
+}
+.stick.berry { background: linear-gradient(to top, var(--biscuit) 0 22%, var(--berry) 22% 100%); }
+.stick:nth-child(2) { height: 140px; animation-delay: -.8s; }
+.stick:nth-child(3) { height: 165px; animation-delay: -1.6s; }
+.stick:nth-child(4) { height: 130px; animation-delay: -2.2s; }
+@keyframes sway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+
+/* Question */
+.choices { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; min-height: 90px; }
+#yesBtn { background: var(--berry); color: #fff; box-shadow: 0 4px 0 #a8324c; }
+#noBtn.runaway { position: fixed; z-index: 5; transition: left .25s ease, top .25s ease, transform .25s; }
+.plea { font-family: var(--font-hand); font-size: 1.3rem; color: var(--berry); min-height: 1.6em; margin: 0; }
+
+/* Envelope */
+.envelope {
+  position: relative; width: min(300px, 80vw); aspect-ratio: 3 / 2; max-width: 100%;
+  background: #f3c4ce; border-radius: 6px; cursor: pointer;
+  box-shadow: 0 14px 30px rgba(74,42,31,.18);
+  animation: bob 2.4s ease-in-out infinite;
+  border: 0; padding: 0;
+}
+.envelope::before { /* flap */
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 60%;
+  background: #eaa9b6; clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-radius: 6px 6px 0 0;
+}
+.envelope::after { /* bottom fold */
+  content: ""; position: absolute; inset: auto 0 0 0; height: 100%;
+  background: #f6d2d9; clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+  border-radius: 0 0 6px 6px;
+}
+.seal {
+  position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%);
+  width: 52px; height: 52px; border-radius: 50%; background: var(--berry); z-index: 2;
+  display: grid; place-items: center; color: #fff; font-size: 24px;
+  box-shadow: 0 2px 0 #a8324c;
+}
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Letter */
+.letter-wrap { justify-content: flex-start; gap: 32px; }
+.letter {
+  width: 100%; max-width: 560px; background: var(--paper); border-radius: 4px;
+  padding: 32px 26px 36px; text-align: left;
+  box-shadow: 0 18px 40px rgba(74,42,31,.15);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 33px, #f1dde0 33px 34px);
+  background-position: 0 88px;
+  background-attachment: local;
+  max-height: 68svh; overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.letter-box { position: relative; width: 100%; max-width: 560px; }
+.scroll-hint {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 64px; border-radius: 0 0 4px 4px;
+  background: linear-gradient(to bottom, rgba(255,250,246,0), var(--paper) 75%);
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px;
+  font-family: var(--font-hand); font-size: 1.1rem; color: var(--berry);
+  pointer-events: none; transition: opacity .3s;
+}
+.scroll-hint span { animation: nudge 1.4s ease-in-out infinite; }
+@keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+.letter h2 { font-size: 2rem; margin-bottom: 18px; }
+.letter p { font-family: var(--font-hand); font-size: 1.35rem; line-height: 34px; margin: 0 0 34px; white-space: pre-line; overflow-wrap: anywhere; word-break: keep-all; }
+.letter .sign { text-align: right; margin: 0; }
+.photos { display: flex; flex-direction: column; align-items: center; gap: 28px; width: 100%; max-width: 460px; }
+.polaroid {
+  margin: 0; background: #fff; padding: 10px 10px 28px; width: 92%; max-width: 100%;
+  box-shadow: 0 8px 18px rgba(74,42,31,.16);
+  transform: rotate(var(--r, -2deg));
+}
+.polaroid:nth-child(2) { --r: 2deg; }
+.polaroid:nth-child(3) { --r: -1deg; }
+.polaroid img { display: block; width: 100%; height: auto; background: var(--ground-2); }
+.end { font-family: var(--font-hand); font-size: 1.6rem; color: var(--berry); margin: 0 0 20px; }
+
+#rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; width: 100%; height: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<style>body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<main id="app"></main>
+
+<script>
+/* ===== 여기만 바꾸면 돼요 ===== */
+const CONFIG = {
+  her: "진아",            // 여자친구 부르는 이름
+  me: "명수",             // 편지 끝 서명
+  question: "나랑 평생\n빼빼로 나눠 먹을래?",
+  letterTitle: "사랑하는 진아에게",
+  letter:
+`진아야, 빼빼로데이라서 요즘 릴스에 많이 보이던 거 나도 한번 만들어봤어.
+
+요즘 임상장학에 정기연주회에 학교 적응하기도 바쁠 텐데 이런저런 일들로 고생이 참 많네 ㅠㅠ 힘든 일 있으면 언제든 내가 옆에 있으니까 나한테 편히 기대면 돼. 알겠지?
+
+주말에 우리 관계를 위해서 진아가 했던 고민들 솔직하게 말해줘서 너무너무 고마워. 진아의 변화를 캐치하려고 노력하지만, 내가 다 알아채지 못하는 순간이 와도 저번처럼 허물없이 편하게 말해주면 좋겠어.
+
+진아랑 있으면 아무것도 안 해도 그냥 좋아서, 내가 군대에 가 있는 동안이 걱정되긴 하지만 자주자주 진아 보러 올라갈게.
+
+앞으로도 이렇게 소소하게 오래오래 같이 있자.
+사랑해 ♥`,
+  photos: ["photos/1.jpg", "photos/2.jpg", "photos/3.jpg"],
+};
+/* ============================ */
+
+const app = document.getElementById("app");
+const nl = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\n/g,"<br>");
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+function show(html) { app.innerHTML = html; window.scrollTo(0, 0); }
+
+/* 1. 인트로 */
+function intro() {
+  show(`<section class="scene">
+    <div class="sticks" aria-hidden="true"><div class="stick"></div><div class="stick berry"></div><div class="stick"></div><div class="stick berry"></div></div>
+    <span class="date">11 · 11</span>
+    <h1>${nl(CONFIG.her)}야,<br>오늘 무슨 날인지 알아?</h1>
+    <button class="btn-main" id="go">음… 무슨 날인데?</button>
+  </section>`);
+  document.getElementById("go").onclick = question;
+}
+
+/* 2. 질문: 아니 버튼은 도망감 */
+const pleas = ["진짜…?", "다시 생각해봐", "손가락 미끄러진 거지?", "마음 아파ㅠㅠ", "그 버튼 고장났어", "그냥 '응' 눌러줘", "제발…🥺"];
+const noLabels = ["싫어", "아니", "음…", "글쎄", "안 돼", "싫다니까"];
+function question() {
+  show(`<section class="scene">
+    <h2>${nl(CONFIG.question)}</h2>
+    <p class="plea" id="plea" aria-live="polite"></p>
+    <div class="choices">
+      <button id="yesBtn">응! 좋아</button>
+      <button class="btn-ghost" id="noBtn">싫어</button>
+    </div>
+  </section>`);
+  const yes = document.getElementById("yesBtn");
+  const no = document.getElementById("noBtn");
+  const plea = document.getElementById("plea");
+  let tries = 0;
+
+  function flee(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    tries++;
+    plea.textContent = pleas[(tries - 1) % pleas.length];
+    no.textContent = noLabels[tries % noLabels.length];
+    yes.style.transform = `scale(${Math.min(1 + tries * 0.15, 2.2)})`;
+    const r = no.getBoundingClientRect();
+    if (!no.classList.contains("runaway")) {
+      no.style.left = r.left + "px"; no.style.top = r.top + "px";
+      no.classList.add("runaway");
+      void no.offsetWidth;
+    }
+    const pad = 16;
+    const maxX = window.innerWidth - r.width - pad;
+    const maxY = window.innerHeight - r.height - pad;
+    const avoid = [yes, document.querySelector("#app h2"), plea].map(el => el.getBoundingClientRect());
+    const hits = (x, y) => avoid.some(a => x < a.right + 10 && x + r.width > a.left - 10 && y < a.bottom + 10 && y + r.height > a.top - 10);
+    let x, y, guard = 0;
+    do {
+      x = pad + Math.random() * Math.max(0, maxX - pad);
+      y = pad + Math.random() * Math.max(0, maxY - pad);
+      guard++;
+    } while (guard < 60 && hits(x, y));
+    no.style.left = x + "px"; no.style.top = y + "px";
+    no.style.transform = `scale(${Math.max(1 - tries * 0.07, 0.55)})`;
+  }
+  no.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") flee(e); });
+  no.addEventListener("touchstart", flee, { passive: false });
+  no.addEventListener("click", flee);
+  yes.onclick = celebrate;
+}
+
+/* 3. 축하 + 봉투 */
+function celebrate() {
+  rain(4200);
+  show(`<section class="scene">
+    <h2>그럴 줄 알았어 ♥</h2>
+    <p class="sub">${esc(CONFIG.her)}한테 편지가 도착했어요</p>
+    <button class="envelope" id="env" aria-label="편지 열기"><span class="seal" aria-hidden="true">♥</span></button>
+    <p class="sub">봉투를 눌러서 열어봐</p>
+  </section>`);
+  document.getElementById("env").onclick = letter;
+}
+
+/* 4. 편지 + 사진 */
+function letter() {
+  const photos = CONFIG.photos.map((src, i) => `
+    <figure class="polaroid"><img src="${esc(src)}" alt="우리 사진 ${i + 1}" loading="lazy"></figure>`).join("");
+  show(`<section class="scene letter-wrap">
+    <div class="letter-box">
+      <article class="letter" id="letter" tabindex="0">
+        <h2>${nl(CONFIG.letterTitle)}</h2>
+        <p>${esc(CONFIG.letter)}</p>
+        <p class="sign">— ${esc(CONFIG.me)}가</p>
+      </article>
+      <div class="scroll-hint" id="hint" aria-hidden="true"><span>↓ 편지를 끝까지 내려봐</span></div>
+    </div>
+    <div class="photos">${photos}</div>
+    <p class="end">Happy Pepero Day ♥</p>
+  </section>`);
+  const el = document.getElementById("letter"), hint = document.getElementById("hint");
+  const update = () => {
+    const more = el.scrollHeight - el.clientHeight - el.scrollTop > 8;
+    hint.style.opacity = more ? 1 : 0;
+  };
+  el.addEventListener("scroll", update, { passive: true });
+  addEventListener("resize", update);
+  update();
+}
+
+/* 빼빼로 비 */
+function rain(ms) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.getElementById("rain"), ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+  const colors = ["#4a2a1f", "#e0526f", "#4a2a1f", "#ffffff"];
+  const items = Array.from({ length: 70 }, () => ({
+    x: Math.random() * innerWidth, y: -Math.random() * innerHeight,
+    v: 2 + Math.random() * 3, a: Math.random() * Math.PI, va: (Math.random() - .5) * .08,
+    len: 34 + Math.random() * 20, col: colors[Math.floor(Math.random() * colors.length)],
+    heart: Math.random() < .25,
+  }));
+  const end = performance.now() + ms;
+  function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of items) {
+      p.y += p.v; p.a += p.va;
+      if (p.y > innerHeight + 40 && t < end) { p.y = -40; p.x = Math.random() * innerWidth; }
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
+      if (p.heart) {
+        ctx.fillStyle = "#e0526f"; ctx.font = "20px sans-serif"; ctx.fillText("♥", -8, 8);
+      } else {
+        ctx.lineCap = "round"; ctx.lineWidth = 7;
+        ctx.strokeStyle = "#e2b47a"; ctx.beginPath(); ctx.moveTo(0, p.len * .3); ctx.lineTo(0, p.len / 2); ctx.stroke();
+        ctx.strokeStyle = p.col; ctx.beginPath(); ctx.moveTo(0, -p.len / 2); ctx.lineTo(0, p.len * .3); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (t < end || items.some(p => p.y < innerHeight + 40)) requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  }
+  requestAnimationFrame(frame);
+}
+
+intro();
+</script>
+</body>
+</html>
